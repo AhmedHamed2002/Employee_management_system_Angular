@@ -1,0 +1,123 @@
+<div class=" w-full bg-gray-100 dark:bg-neutral-900 px-8 pb-8 pt-28 flex items-center justify-center">
+
+  <!-- Container -->
+  <div class="max-w-7xl w-full bg-white dark:bg-neutral-900 shadow-2xl rounded-3xl overflow-hidden border border-gray-200 dark:border-neutral-700 flex flex-col md:flex-row">
+
+    <!-- Sidebar: Avatar Preview -->
+    <aside class="w-full md:w-64 bg-gradient-to-br from-indigo-700 to-blue-800 text-white p-6 flex flex-col items-center justify-center">
+      <div class="relative">
+        <img
+          [src]="previewUrl || 'https://res.cloudinary.com/dtnkj1dqe/image/upload/v1757593418/EMS/employees/xvjszdqfp2tfmjm1itwe.jpg'"
+          alt="Avatar"
+          class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover">
+        <label for="avatarUpload"
+               class="absolute bottom-2 right-2 bg-white text-indigo-600 p-2 rounded-full cursor-pointer shadow-md hover:bg-gray-100 transition">
+          <i class="fas fa-camera"></i>
+        </label>
+        <input type="file" id="avatarUpload" hidden accept="image/*" (change)="onFileSelected($event)">
+      </div>
+
+      <h2 class="mt-6 text-2xl font-bold">New Employee</h2>
+      <p class="mt-2 px-4 py-1 bg-white/20 rounded-lg text-sm font-medium inline-flex items-center gap-1">
+        <i class="fas fa-user-shield"></i> Employee
+      </p>
+    </aside>
+
+    <!-- Main Content: Form -->
+    <section class="flex-1 p-5 overflow-y-auto">
+      <h1 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+        <i class="fas fa-user-plus text-indigo-700"></i> Create Employee
+      </h1>
+
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="space-y-2">
+
+        <!-- Name & Email  & Phone -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Name</label>
+            <input type="text" formControlName="name" placeholder="John Doe"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Email</label>
+            <input type="email" formControlName="email" placeholder="john@example.com"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Phone</label>
+            <input type="text" formControlName="phone" placeholder="+1 234 567 890"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <!-- Gender & Address & City-->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Gender</label>
+            <select formControlName="gender"
+                    class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+              <option *ngFor="let g of genders" [value]="g">{{ g | titlecase }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Address</label>
+            <input type="text" formControlName="address" placeholder="123 Main St"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">City</label>
+            <input type="text" formControlName="city" placeholder="New York"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <!-- Birthday  -->
+        <div class="grid grid-cols-1  gap-4">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Birthday</label>
+            <input type="date" formControlName="birthday"
+                   class="w-full  mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-neutral-500 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <!-- Position & Department & Salary-->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Position</label>
+            <input type="text" formControlName="position" placeholder="Software Engineer"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Department</label>
+            <select formControlName="department"
+                    class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+              <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Salary</label>
+            <input type="number" formControlName="salary" placeholder="5000"
+                   class="w-full placeholder:text-neutral-500 mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <!-- Hire Date -->
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Hire Date</label>
+            <input type="date" formControlName="hireDate"
+                  class="w-full  mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-neutral-500 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6 flex justify-end">
+          <button type="submit"
+                  class="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition">
+            <i class="fas fa-plus"></i> Create Employee
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

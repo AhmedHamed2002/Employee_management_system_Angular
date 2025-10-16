@@ -1,0 +1,270 @@
+<!-- Include Font Awesome CDN in index.html -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+  integrity="sha512-pap7x/8xXzP7B7mI2tYvHj7bb0yQnqYwJ3Xl6+f6x2w/tG6cY4xRvs1RXh0Y2Zedch1p6IGi7k3Y0V6F9dKJAg=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+<div class="min-h-screen bg-gray-100 dark:bg-neutral-900 flex items-center justify-center px-6 pb-6 pt-32">
+  <div class="w-full max-w-5xl bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center py-20 text-gray-500 dark:text-gray-400">
+      <i class="fas fa-spinner fa-spin text-3xl"></i>
+      <p class="mt-3">Loading employee details...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error" class="text-center py-20 text-red-500 font-medium">
+      <i class="fas fa-triangle-exclamation text-3xl"></i>
+      <p class="mt-3">{{ error }}</p>
+    </div>
+
+    <!-- Employee Form -->
+    <form *ngIf="!isLoading && !error && employeeForm" [formGroup]="employeeForm" class="space-y-6">
+
+      <!-- Header: Avatar + Name -->
+      <div class="flex flex-col md:flex-row items-center gap-6">
+        <div class="relative flex flex-col items-center">
+          <!-- Avatar -->
+          <img
+            *ngIf="employee?.image || previewUrl"
+            [src]="previewUrl || employee?.image"
+            alt="Avatar"
+            class="w-36 h-36 rounded-full border-4 border-white shadow-lg object-cover transition-transform hover:scale-105"
+          />
+
+          <!-- Edit Mode: Camera Button Overlay -->
+          <label
+            *ngIf="editMode"
+            for="avatarUpload"
+            class="absolute bottom-2 right-1 bg-white text-indigo-600 p-2 rounded-full cursor-pointer shadow-md hover:bg-gray-100 transition"
+            title="Change Avatar"
+          >
+            <i class="fas fa-camera"></i>
+          </label>
+
+          <!-- File Input (hidden) -->
+          <input
+            type="file"
+            id="avatarUpload"
+            hidden
+            accept="image/*"
+            (change)="onFileSelected($event)"
+          />
+        </div>
+
+        <div class="text-center md:text-left">
+          <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+            {{ employeeForm.get('name')?.value }}
+          </h2>
+          <p class="text-gray-500 dark:text-gray-400 text-lg mt-1">
+            <i class="fas fa-briefcase mr-2"></i>{{ employeeForm.get('position')?.value }}
+            - {{ employeeForm.get('department')?.value }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 mt-4">
+        <button *ngIf="employee.role !== 'user'" type="button" (click)="toggleEdit()"
+                class="flex items-center gap-2 px-4 py-2 bg-blue-800 text-white rounded-lg shadow hover:bg-blue-700 transition">
+          <i [ngClass]="editMode ? 'fas fa-times' : 'fas fa-pen'"></i>
+          {{ editMode ? 'Cancel' : 'Edit' }}
+        </button>
+
+        <button *ngIf="editMode" type="button" (click)="onUpdate()"
+                class="flex items-center gap-2 px-4 py-2 bg-cyan-800 text-white rounded-lg shadow hover:bg-cyan-700 transition">
+          <i class="fas fa-save"></i> Save
+        </button>
+
+        <button *ngIf="employee.role == 'manager'" type="button" (click)="onDelete()"
+                class="flex items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-lg shadow hover:bg-red-600 transition">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+        <!-- Employee ID -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-id-badge text-indigo-600"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Employee ID</p>
+            <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('id')?.value }}</p>
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-user text-lime-200"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Name</p>
+            <ng-container *ngIf="!editMode; else editName">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('name')?.value }}</p>
+            </ng-container>
+            <ng-template #editName>
+              <input formControlName="name"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div *ngIf="employee.role !== 'user'" class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-envelope text-red-700"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+            <ng-container *ngIf="!editMode; else editEmail">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('email')?.value }}</p>
+            </ng-container>
+            <ng-template #editEmail>
+              <input type="email" formControlName="email"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div *ngIf="employee.role !== 'user'" class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-phone text-red-400"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+            <ng-container *ngIf="!editMode; else editPhone">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('phone')?.value }}</p>
+            </ng-container>
+            <ng-template #editPhone>
+              <input formControlName="phone"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Birthday -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-birthday-cake text-teal-300"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Birthday</p>
+            <ng-container *ngIf="!editMode; else editBirthday">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('birthday')?.value }}</p>
+            </ng-container>
+            <ng-template #editBirthday>
+              <input type="date" formControlName="birthday"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Age -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-user-clock text-teal-300"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400"> Age </p>
+            <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('age')?.value }}</p>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-map-marker-alt text-indigo-600"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Address</p>
+            <ng-container *ngIf="!editMode; else editAddress">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('address')?.value }}</p>
+            </ng-container>
+            <ng-template #editAddress>
+              <input formControlName="address"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- City -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-city text-indigo-600"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">City</p>
+            <ng-container *ngIf="!editMode; else editCity">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('city')?.value }}</p>
+            </ng-container>
+            <ng-template #editCity>
+              <input formControlName="city"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-venus-mars text-violet-500"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Gender</p>
+            <ng-container *ngIf="!editMode; else editGender">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('gender')?.value }}</p>
+            </ng-container>
+            <ng-template #editGender>
+              <select formControlName="gender"
+                      class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Salary -->
+        <div *ngIf="employee.role !== 'user'" class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-dollar-sign text-green-600"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Salary</p>
+            <ng-container *ngIf="!editMode; else editSalary">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('salary')?.value | currency }}</p>
+            </ng-container>
+            <ng-template #editSalary>
+              <input type="number" formControlName="salary"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Hire Date -->
+        <div class="bg-gray-200 dark:bg-neutral-700 p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center gap-3">
+          <i class="fas fa-calendar-check text-orange-500"></i>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Hire Date</p>
+            <ng-container *ngIf="!editMode; else editHireDate">
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('hireDate')?.value }}</p>
+            </ng-container>
+            <ng-template #editHireDate>
+              <input type="date" formControlName="hireDate"
+                     class="w-full px-3 py-2 rounded-md border dark:border-gray-600 dark:bg-neutral-700 dark:text-white" />
+            </ng-template>
+          </div>
+        </div>
+
+        <div *ngIf="employee.role !== 'user'" class="p-4 rounded-lg shadow-sm hover:shadow-md transition flex items-center justify-between gap-3">
+          <!-- Created At -->
+          <div class="flex items-center">
+            <i class="fas fa-clock text-cyan-600 me-2"></i>
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Created At</p>
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('createdAt')?.value }}</p>
+            </div>
+          </div>
+          <!-- Updated At -->
+          <div class="flex items-center">
+            <i class="fas fa-clock text-cyan-600 me-2"></i>
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Last Updated</p>
+              <p class="font-medium text-gray-800 dark:text-gray-200">{{ employeeForm.get('updatedAt')?.value }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>

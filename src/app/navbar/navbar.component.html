@@ -1,0 +1,107 @@
+<nav class="bg-indigo-600 border-b border-gray-800 fixed w-full z-30 top-0 left-0 dark:bg-neutral-900 dark:border-gray-500 transition-colors duration-300">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <a routerLink="/home" class="flex items-center">
+      <span class="self-center text-2xl font-semibold whitespace-nowrap text-neutral-900 dark:text-white">
+        <i class="fas fa-briefcase text-yellow-500 dark:text-indigo-600 mr-2"></i> EmployeeMS
+      </span>
+    </a>
+    <div class="flex items-center md:order-2 space-x-4">
+      <!-- Dark mode toggle button -->
+      <button (click)="toggleDarkMode()" aria-label="Toggle Dark Mode"
+        class="text-gray-100 dark:text-gray-400 hover:text-neutral-900 dark:hover:text-white focus:outline-none rounded p-2">
+        <svg *ngIf="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07 5.66l-.7-.7M6.34 6.34l-.7-.7m12.02 12.02l-.7-.7M6.34 17.66l-.7-.7M12 7a5 5 0 000 10 5 5 0 000-10z" />
+        </svg>
+        <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor"
+          viewBox="0 0 24 24" stroke="none">
+          <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+        </svg>
+      </button>
+
+      <button data-collapse-toggle="navbar-default" type="button"
+        class="inline-flex items-center p-2 text-sm text-gray-100 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-neutral-600"
+        aria-controls="navbar-default" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M3 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 4h14a1 1 0 010 2H3a1 1 0 110-2z"
+            clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="hidden w-full md:flex md:w-auto md:order-1" id="navbar-default">
+      <ul
+        class="font-medium flex flex-col p-4 md:p-0 md:ps-4 mt-4 border border-gray-100 rounded-lg bg-blue-200/60 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-neutral-800 dark:border-neutral-700">
+
+        <!-- Home -->
+        <li>
+          <a routerLink="/home" routerLinkActive="text-blue-700 dark:text-blue-300" (click)="closeNavbar()"
+            class="flex items-center gap-2 mt-3 py-2 pl-3 pr-4 rounded md:bg-transparent md:p-0 text-gray-900 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400">
+            <i class="fas fa-home"></i> Home
+          </a>
+        </li>
+
+        <!-- All Users -->
+        <li>
+          <a routerLink="/all-users" routerLinkActive="text-blue-700 dark:text-blue-300" (click)="closeNavbar()"
+            class="flex items-center gap-2 mt-3 py-2 pl-3 pr-4 rounded md:bg-transparent md:p-0 text-gray-900 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400">
+            <i class="fas fa-users"></i> All Users
+          </a>
+        </li>
+
+        @if (role !== 'user') {
+          <li>
+            <a routerLink="/add-user" routerLinkActive="text-blue-700 dark:text-blue-300" (click)="closeNavbar()"
+              class="flex items-center gap-2 mt-3 py-2 pl-3 pr-4 rounded md:bg-transparent md:p-0 text-gray-900 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400">
+              <i class="fas fa-user-plus"></i> Add User
+            </a>
+          </li>
+        }
+
+        <!-- Profile Dropdown -->
+        <li class="relative">
+          <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
+            class="flex items-center justify-between w-full py-2 pl-3 pr-4 font-medium rounded md:w-auto text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400"
+            type="button">
+            <img class="w-8 h-8 rounded-full mr-2" *ngIf="avatar" [src]="avatar"
+              alt="Profile" />
+            <svg class="ml-1 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+
+          <!-- Dropdown menu -->
+          <div id="dropdownNavbar"
+            class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-neutral-700 dark:divide-gray-600">
+            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownNavbarLink">
+              <li>
+                <a  routerLink="/profile" routerLinkActive="text-blue-700 dark:text-blue-300" (click)="closeNavbar()"
+                  class="flex items-center gap-2 py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">
+                  <i class="fas fa-user"></i> Profile
+                </a>
+              </li>
+              <li>
+                <a  routerLink="/settings" routerLinkActive="text-blue-700 dark:text-blue-300" (click)="closeNavbar()"
+                  class="flex items-center gap-2 py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">
+                  <i class="fas fa-cog"></i> Settings
+                </a>
+              </li>
+
+              <!-- Show logout ONLY if logged in -->
+              <li *ngIf="isLoggedIn">
+                <button (click)="onLogout()"
+                  class="w-full flex items-center gap-2 py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 text-left">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+              </li>
+            </ul>
+          </div>
+
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

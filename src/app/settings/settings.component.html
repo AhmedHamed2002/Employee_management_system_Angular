@@ -1,0 +1,79 @@
+<div class="min-h-screen pt-28 w-full bg-gradient-to-br from-stone-50 to-stone-100 dark:from-neutral-900 dark:to-neutral-950 p-8">
+
+  <!-- Loader -->
+  <div *ngIf="loading" class="text-center py-60 text-gray-500 dark:text-gray-400">
+    <i class="fas fa-spinner fa-spin text-3xl"></i>
+    <p class="mt-3">Loading profile...</p>
+  </div>
+
+  <!-- Container -->
+  <div *ngIf="!loading" class="max-w-6xl mx-auto bg-white dark:bg-neutral-900 shadow-2xl rounded-3xl overflow-hidden border border-gray-200 dark:border-neutral-700">
+    <div class="grid grid-cols-1 md:grid-cols-2">
+
+      <!-- Left: Profile Preview -->
+      <div class="flex flex-col items-center justify-center p-10 bg-gradient-to-br from-indigo-700 to-blue-800 text-white">
+        <div class="relative">
+          <img [src]="user.image"
+              alt="Avatar"
+              class="w-40 h-40 rounded-full border-4 border-white shadow-lg object-cover">
+          <label for="avatarUpload"
+                class="absolute bottom-2 right-2 bg-white text-indigo-600 p-2 rounded-full cursor-pointer shadow-md hover:bg-gray-100 transition">
+            <i class="fas fa-camera"></i>
+          </label>
+          <input type="file" id="avatarUpload" hidden (change)="onFileSelected($event)">
+        </div>
+
+        <h2 class="mt-6 text-2xl font-bold">{{ user.firstName }} {{ user.lastName }}</h2>
+        <p class="text-indigo-100"><i class="fas fa-envelope mr-2"></i>{{ user.email }}</p>
+        <p class="mt-2 px-4 py-1 bg-white/20 rounded-lg text-sm font-medium">
+          <i class="fas fa-user-shield mr-1"></i>{{ user.role || 'Employee' }}
+        </p>
+      </div>
+
+      <!-- Right: Edit Form -->
+      <div class="p-10">
+        <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center">
+          <i class="fas fa-user-edit mr-3 text-indigo-700"></i> Edit Profile
+        </h1>
+
+        <form class="space-y-6" (ngSubmit)="saveProfile()">
+          <!-- First Name -->
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">First Name</label>
+            <input [(ngModel)]="user.firstName" name="firstName" required
+                  class="w-full mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+
+          <!-- Last Name -->
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Last Name</label>
+            <input [(ngModel)]="user.lastName" name="lastName" required
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-semibold">Email</label>
+            <input [(ngModel)]="user.email" name="email" type="email" required
+                  class="w-full mt-2 p-3 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:text-white dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-10 flex justify-end gap-4">
+            <a routerLink="/profile"
+              class="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit"
+                    class="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition">
+              <i class="fas fa-save"></i> Save
+            </button>
+          </div>
+        </form>
+
+        <!-- Error Message -->
+        <p *ngIf="error" class="text-center text-red-600 dark:text-red-500 mt-6">{{ error }}</p>
+      </div>
+    </div>
+  </div>
+</div>
